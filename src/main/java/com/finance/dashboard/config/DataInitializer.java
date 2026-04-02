@@ -9,6 +9,7 @@ import com.finance.dashboard.repository.UserRepository;
 import com.finance.dashboard.util.Constants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,6 +24,10 @@ public class DataInitializer {
     private final CategoryRepository categoryRepository;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+
+    // In production, set ADMIN_PASSWORD env var to a strong password
+    @Value("${admin.password:admin123}")
+    private String adminPassword;
 
     @Bean
     public CommandLineRunner initData() {
@@ -57,11 +62,11 @@ public class DataInitializer {
                         .email("admin@finance.com")
                         .firstName("Admin")
                         .lastName("User")
-                        .password(passwordEncoder.encode("admin123"))
+                        .password(passwordEncoder.encode(adminPassword))
                         .role(adminRole)
                         .status(User.UserStatus.ACTIVE)
                         .build());
-                log.info("Admin user seeded: admin@finance.com / admin123");
+                log.info("Admin user seeded: admin@finance.com");
             }
         };
     }

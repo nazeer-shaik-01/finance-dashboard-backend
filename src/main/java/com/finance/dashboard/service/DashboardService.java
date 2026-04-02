@@ -69,9 +69,7 @@ public class DashboardService {
                         Map.Entry::getKey,
                         e -> CategoryBreakdown.CategoryAmount.builder()
                                 .amount(e.getValue())
-                                .percentage(finalIncome.compareTo(BigDecimal.ZERO) == 0 ? 0 :
-                                        e.getValue().multiply(BigDecimal.valueOf(100))
-                                                .divide(finalIncome, 2, RoundingMode.HALF_UP).doubleValue())
+                                .percentage(calculatePercentage(e.getValue(), finalIncome))
                                 .build(),
                         (a, b) -> a, LinkedHashMap::new));
 
@@ -80,9 +78,7 @@ public class DashboardService {
                         Map.Entry::getKey,
                         e -> CategoryBreakdown.CategoryAmount.builder()
                                 .amount(e.getValue())
-                                .percentage(finalExpense.compareTo(BigDecimal.ZERO) == 0 ? 0 :
-                                        e.getValue().multiply(BigDecimal.valueOf(100))
-                                                .divide(finalExpense, 2, RoundingMode.HALF_UP).doubleValue())
+                                .percentage(calculatePercentage(e.getValue(), finalExpense))
                                 .build(),
                         (a, b) -> a, LinkedHashMap::new));
 
@@ -163,5 +159,14 @@ public class DashboardService {
                 .averageDailyExpense(avgDailyExpense)
                 .topCategory(topCategory)
                 .build();
+    }
+
+    private double calculatePercentage(BigDecimal amount, BigDecimal total) {
+        if (total.compareTo(BigDecimal.ZERO) == 0) {
+            return 0.0;
+        }
+        return amount.multiply(BigDecimal.valueOf(100))
+                .divide(total, 2, RoundingMode.HALF_UP)
+                .doubleValue();
     }
 }
