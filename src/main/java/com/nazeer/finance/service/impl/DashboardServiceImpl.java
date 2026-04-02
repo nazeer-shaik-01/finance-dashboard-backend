@@ -6,6 +6,7 @@ import com.nazeer.finance.dto.RecordResponse;
 import com.nazeer.finance.dto.TrendPointResponse;
 import com.nazeer.finance.entity.FinancialRecord;
 import com.nazeer.finance.entity.RecordType;
+import com.nazeer.finance.exception.BadRequestException;
 import com.nazeer.finance.repository.FinancialRecordRepository;
 import com.nazeer.finance.service.DashboardService;
 import org.springframework.stereotype.Service;
@@ -80,6 +81,9 @@ public class DashboardServiceImpl implements DashboardService {
         if ("weekly".equalsIgnoreCase(granularity)) {
             return date.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)).toString();
         }
-        return String.format("%d-%02d", date.getYear(), date.getMonthValue());
+        if ("monthly".equalsIgnoreCase(granularity)) {
+            return String.format("%d-%02d", date.getYear(), date.getMonthValue());
+        }
+        throw new BadRequestException("Invalid granularity. Supported values: weekly, monthly");
     }
 }

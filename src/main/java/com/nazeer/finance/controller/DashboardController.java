@@ -5,6 +5,9 @@ import com.nazeer.finance.dto.DashboardSummaryResponse;
 import com.nazeer.finance.dto.RecordResponse;
 import com.nazeer.finance.dto.TrendPointResponse;
 import com.nazeer.finance.service.DashboardService;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,6 +19,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/dashboard")
+@Validated
 public class DashboardController {
 
     private final DashboardService dashboardService;
@@ -44,7 +48,8 @@ public class DashboardController {
 
     @GetMapping("/recent")
     @PreAuthorize("hasAnyRole('ADMIN','ANALYST','VIEWER')")
-    public ResponseEntity<List<RecordResponse>> getRecent(@RequestParam(defaultValue = "5") int limit) {
+    public ResponseEntity<List<RecordResponse>> getRecent(
+            @RequestParam(defaultValue = "5") @Min(1) @Max(100) int limit) {
         return ResponseEntity.ok(dashboardService.getRecentTransactions(limit));
     }
 }
